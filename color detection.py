@@ -1,6 +1,12 @@
 import numpy as np
 import cv2
 
+
+# x coordinate
+# y coordinate
+# w : width
+# h : height
+# z : erea of rectangle
 webcam = cv2.VideoCapture(0)
 while(1):
     _, imageFrame = webcam.read()
@@ -41,8 +47,15 @@ while(1):
                         (0, 0, 255))    
             cx = int(M['m10']/M['m00'])
             cy = int(M['m01']/M['m00'])
-            print(f"x: {cx} y: {cy}")
+            cw = int(M['m10']/M['m00'])
+            ch = int(M['m01']/M['m00'])
+            z = cw * ch
+            z *= 0.001 
+            z = round(z)
+            print(z)
 
+
+            print(f"x: {cx} y: {cy} z: {z}" )
     # Program Termination
     cv2.imshow("Multiple Color Detection in Real-TIme", imageFrame)
     if cv2.waitKey(10) & 0xFF == ord('q'):
