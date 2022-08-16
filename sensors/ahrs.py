@@ -30,7 +30,7 @@ def MPU6050_start():
     # interrupt register (related to overflow of data [FIFO])
     bus.write_byte_data(MPU6050_ADDR, INT_ENABLE, 1)
     time.sleep(0.1)
-    return gyro_config_vals[gyro_indx],accel_config_vals[accel_indx]
+    return [gyro_indx],accel_config_vals[accel_indx]
     
 def read_raw_bits(register):
     # read accel and gyro values
