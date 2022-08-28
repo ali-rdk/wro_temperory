@@ -19,11 +19,15 @@ int state = 0;
 int side = 0;
 long timer = 0;
 int target_angle = 0;
+float sum_error = 0;
 float error;
+float d = 0;
+float last_error = 0;
 float correction;
 int servo_position;
 float straught_distance,c,r,l;
 float right_distance;
+boolean flag = true;
 
 void setup() {
     pinMode(motor1, OUTPUT);
@@ -44,22 +48,30 @@ void setup() {
     Serial.println("Done!\n");
     for (int i=0; i != 3; i++){right_distance = right_distance + ultra_r.measureDistanceCm();}
         right_distance = right_distance/3;
+    pinMode(8, INPUT);
+    pinMode(12, OUTPUT);
+    while (digitalRead(8) == LOW){digitalWrite(12,HIGH);}digitalWrite(12,LOW);
+    target_angle = mpu.getAngleZ();
 
 }
 
 void loop() {
   analogWrite(motor1, 0);
-  analogWrite(motor2, 150);
+  analogWrite(motor2, 100);
   mpu.update();
-  
-  Serial.print(target_angle);
+  if (flag == true){
+  target_angle = mpu.getAngleZ();flag = false;}
+//  Serial.print(target_angle);
   Serial.println(mpu.getAngleZ());
 
 
   error = mpu.getAngleZ()- target_angle;
-  correction = middle_servo + (error*1);
+  sum_error += error;
+  d = error - last_error;
+  last_error = error;
+  correction = middle_servo + (error*2)+(d*1);
   correction +=  wall_c;
-  if (correction >= 100){correction = 100;}
+  if (correction >= 160){correction = 160;}
   if (correction <= 20){correction = 20;}
   servo_1.write(correction );
   straught_distance = 0;
@@ -70,10 +82,10 @@ void loop() {
   c = ultra_c.measureDistanceCm();
   r = ultra_r.measureDistanceCm();
   l = ultra_l.measureDistanceCm();
-  if (r <= 10 && r >= 5){wall_c = -130/r;}
-  else if (l <= 10 && l >= 5){wall_c = 130/l;}
+  if (r <= 30 && r >= 5){wall_c = -130/r;}
+  else if (l <= 30 && l >= 5){wall_c = 130/l;}
   else{wall_c = 0;}
-  if (straught_distance <= 70 && straught_distance >= 5 && c<=70 && c>=5 && millis()-timer >=2000 &&abs(mpu.getAngleZ()- target_angle)<=20  ){
+  if (straught_distance <= 50 && straught_distance >= 5 && c<=50 && c>=5 && millis()-timer >=3000 &&abs(mpu.getAngleZ()- target_angle)<=10  ){
     if (state == 0){
       right_distance = 0;
       for (int i=0; i != 3; i++){right_distance = right_distance + r;}
