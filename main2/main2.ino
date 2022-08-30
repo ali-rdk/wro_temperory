@@ -25,6 +25,7 @@ float d = 0;
 float last_error = 0;
 float correction;
 int servo_position;
+float start_c,start_r,start_l;
 float straught_distance,c,r,l;
 float right_distance;
 boolean flag = true;
@@ -51,6 +52,12 @@ void setup() {
     pinMode(8, INPUT);
     pinMode(12, OUTPUT);
     while (digitalRead(8) == LOW){digitalWrite(12,HIGH);}digitalWrite(12,LOW);
+    for (int i=0; i != 3; i++){start_c = start_c + ultra_c.measureDistanceCm();}
+        start_c = start_c/3;
+    for (int i=0; i != 3; i++){start_r = start_r + ultra_r.measureDistanceCm();}
+        start_c = start_c/3;
+    for (int i=0; i != 3; i++){start_l = start_l + ultra_l.measureDistanceCm();}
+        start_l = start_l/3;
     target_angle = mpu.getAngleZ();
 
 }
@@ -63,8 +70,8 @@ void loop() {
   target_angle = mpu.getAngleZ();flag = false;}
 //  Serial.print(target_angle);
   Serial.println(mpu.getAngleZ());
-
-
+  
+  
   error = mpu.getAngleZ()- target_angle;
   sum_error += error;
   d = error - last_error;
@@ -82,6 +89,10 @@ void loop() {
   c = ultra_c.measureDistanceCm();
   r = ultra_r.measureDistanceCm();
   l = ultra_l.measureDistanceCm();
+  if (target_angle == 360 * 4 && start_c >= c){
+    analogWrite(motor1, 0);
+  analogWrite(motor2, 0);
+  while(1){continue;}}
   if (r <= 30 && r >= 5){wall_c = -130/r;}
   else if (l <= 30 && l >= 5){wall_c = 130/l;}
   else{wall_c = 0;}
