@@ -89,7 +89,7 @@ void loop() {
   c = ultra_c.measureDistanceCm();
   r = ultra_r.measureDistanceCm();
   l = ultra_l.measureDistanceCm();
-  if (target_angle == 360 * 4 && start_c >= c){
+  if (target_angle == 360 * 3 && start_c >= c){
     analogWrite(motor1, 0);
   analogWrite(motor2, 0);
   while(1){continue;}}
